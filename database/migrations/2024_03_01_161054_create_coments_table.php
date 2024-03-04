@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('user_name');
             $table->string('email');
             $table->string('home_page')->nullable();
-            $table->string('file_path')->nullable();
+            $table->string('file')->nullable();
             $table->text('text');
             $table->timestamps();
             $table->string('parent_comment_id')->nullable();

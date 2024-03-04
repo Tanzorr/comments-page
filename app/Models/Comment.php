@@ -13,7 +13,7 @@ class Comment extends Model
         'user_name',
         'email',
         'home_page',
-        'file_path',
+        'file',
         'text',
         'parent_comment_id',
     ];

@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CommentRequest;
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use App\Services\ImageService;
 
 class CommentController extends Controller
 {
+    private string $storagePath = 'app/public/files';
+    public function __construct(public ImageService $imageService)
+    {
+
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -26,14 +34,15 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Comment $comment): void
+    public function store(CommentRequest $request, Comment $comment): void
     {
-        $comment->user_name = $request->input('user_name');
-        $comment->email = $request->input('email');
-        $comment->home_page = $request->input('home_page');
-        $comment->file_path = $request->input('file_path');
-        $comment->text = $request->input('text');
-        $comment->parent_comment_id = $request->input('parent_comment_id');
+        $data = $request->validated();
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $data['file'] = $this->imageService->saveImage($file, $this->storagePath);
+        }
+
+        $comment->fill($data);
         $comment->save();
     }
 
