@@ -18,9 +18,13 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): void
     {
-        echo "Hello comments";
+        $comments = new Comment();
+
+        $rootComments = $comments->paginate(5);
+
+        print_r($rootComments);
     }
 
     /**
@@ -35,13 +39,14 @@ class CommentController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(CommentRequest $request, Comment $comment): void
+
     {
         $data = $request->validated();
+
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $data['file'] = $this->imageService->saveImage($file, $this->storagePath);
+            $data['file_path'] = $this->imageService->saveImage($file, $this->storagePath);
         }
-
         $comment->fill($data);
         $comment->save();
     }
