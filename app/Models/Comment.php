@@ -21,9 +21,30 @@ class Comment extends Model
         'parent_comment_id',
     ];
 
-    // Визначте відносину для дочірніх коментарів
-//    public function replies()
-//    {
-//        return $this->hasMany(Comment::class, 'parent_comment_id')->with('replies');
-//    }
+
+    // Відношення до дочірніх коментарів
+    public function subcomments()
+    {
+        return $this->hasMany(self::class, 'parent_comment_id')->with('subcomments');
+    }
+
+    // Відношення до батьківського коментаря
+    public function parentComment()
+    {
+        return $this->belongsTo(self::class, 'parent_comment_id');
+    }
+
+    // Отримати всі кореневі коментарі
+    public static function getAllRootComments()
+    {
+        return static::with('subcomments')->whereNull('parent_comment_id')->orderBy('id')->get();
+    }
+
+    // Отримати коментарі з вказаним parent_comment_id та їхні субкоментарі
+    public static function getCommentsWithSubComments($parentCommentId): Collection|array
+    {
+        return static::with('subcomments')->where('parent_comment_id', $parentCommentId)->get();
+    }
+
+
 }

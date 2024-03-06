@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CommentRequest;
+use App\Http\Resources\CommentCollection;
 use App\Models\Comment;
 use Illuminate\Http\Request;
 use App\Services\ImageService;
@@ -20,11 +21,9 @@ class CommentController extends Controller
      */
     public function index(): void
     {
-        $comments = new Comment();
-
-        $rootComments = $comments->paginate(5);
-
-        print_r($rootComments);
+        $comments = Comment::where('parent_comment_id', null)->with('subComments')->get();
+        $comments = new CommentCollection($comments);
+        echo $comments->toJson();
     }
 
     /**
