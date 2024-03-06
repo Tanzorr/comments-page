@@ -37,6 +37,23 @@ class Comment extends Model
         return static::with('subcomments')->whereNull('parent_comment_id')->orderBy('id');
     }
 
+
+    /**
+     * Scope a query to sort root comments by user_name, email, and created_at.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string  $column
+     * @param  string  $direction
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortRootComments($query, $column = 'created_at', $direction = 'asc')
+    {
+        return $query->whereNull('parent_comment_id') // Only root comments
+        ->orderBy($column, $direction)
+            ->orderBy('user_name') // You can add more columns for sorting
+            ->orderBy('email');
+    }
+
     public static function getCommentsWithSubComments($parentCommentId): Collection|array
     {
         return static::with('subcomments')->where('parent_comment_id', $parentCommentId)->get();

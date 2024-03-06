@@ -20,9 +20,13 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): void
+    public function index(Request $request): void
     {
-        $comments = Comment::getAllRootComments()->paginate(2);
+        $sortBy = $request->get('sort_by', 'created_at'); // За замовчуванням сортуємо за created_at
+        $sortDirection = $request->get('sort_direction', 'asc'); // За замовчуванням в порядку зростання
+
+        $comments = Comment::sortRootComments($sortBy, $sortDirection)->paginate(25);
+
         $commentCollection = new CommentCollection($comments);
         echo $commentCollection->toJson();
     }

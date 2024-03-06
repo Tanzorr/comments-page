@@ -12,14 +12,15 @@ class CommentFactory extends Factory
 {
 
     protected $model = Comment::class;
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+
     public function definition(): array
     {
-        $existingComment = Comment::inRandomOrder()->first(); // Retrieve a random existing comment
+        $parentCommentId = null;
+
+        if (Comment::count() > 0) {
+            $existingCommentId = Comment::inRandomOrder()->first()->id;
+            $parentCommentId = $this->faker->boolean(50) ? null : $existingCommentId;
+        }
 
         return [
             'user_name' => $this->faker->userName,
@@ -27,7 +28,7 @@ class CommentFactory extends Factory
             'home_page' => $this->faker->url,
             'text' => $this->faker->paragraph,
             'file' => $this->faker->imageUrl(),
-            'parent_comment_id' => $existingComment ? $existingComment->id : null
+            'parent_comment_id' => $parentCommentId,
         ];
     }
 }

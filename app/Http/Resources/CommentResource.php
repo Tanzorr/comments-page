@@ -24,6 +24,7 @@ class CommentResource extends JsonResource
             'created_at'=>$this->created_at,
             'parent_comment_id'=>$this->parent_comment_id,
             'sub_comments'=> Comment::getCommentsWithSubComments($this->id)
+
         ];
     }
 }
