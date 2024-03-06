@@ -11,6 +11,7 @@ use App\Services\ImageService;
 class CommentController extends Controller
 {
     private string $storagePath = 'app/public/files';
+
     public function __construct(public ImageService $imageService)
     {
 
@@ -21,9 +22,9 @@ class CommentController extends Controller
      */
     public function index(): void
     {
-        $comments = Comment::where('parent_comment_id', null)->with('subComments')->get();
-        $comments = new CommentCollection($comments);
-        echo $comments->toJson();
+        $comments = Comment::getAllRootComments()->paginate(2);
+        $commentCollection = new CommentCollection($comments);
+        echo $commentCollection->toJson();
     }
 
     /**

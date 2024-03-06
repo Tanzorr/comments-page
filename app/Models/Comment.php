@@ -12,7 +12,7 @@ class Comment extends Model
 {
     use HasFactory;
 
-   protected $fillable = [
+    protected $fillable = [
         'user_name',
         'email',
         'home_page',
@@ -22,25 +22,21 @@ class Comment extends Model
     ];
 
 
-    // Відношення до дочірніх коментарів
-    public function subcomments()
+    public function subcomments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(self::class, 'parent_comment_id')->with('subcomments');
     }
 
-    // Відношення до батьківського коментаря
-    public function parentComment()
+    public function parentComment(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_comment_id');
     }
 
-    // Отримати всі кореневі коментарі
-    public static function getAllRootComments()
+    public static function getAllRootComments(): \Illuminate\Database\Eloquent\Builder
     {
-        return static::with('subcomments')->whereNull('parent_comment_id')->orderBy('id')->get();
+        return static::with('subcomments')->whereNull('parent_comment_id')->orderBy('id');
     }
 
-    // Отримати коментарі з вказаним parent_comment_id та їхні субкоментарі
     public static function getCommentsWithSubComments($parentCommentId): Collection|array
     {
         return static::with('subcomments')->where('parent_comment_id', $parentCommentId)->get();
