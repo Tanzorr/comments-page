@@ -22,6 +22,7 @@ class Comment extends Model
     ];
 
 
+
     public function subcomments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(self::class, 'parent_comment_id')->with('subcomments');

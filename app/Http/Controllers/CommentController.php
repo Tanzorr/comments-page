@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\StoreCommentAction;
 use App\Http\Requests\CommentRequest;
 use App\Http\Resources\CommentCollection;
 use App\Models\Comment;
@@ -22,13 +23,12 @@ class CommentController extends Controller
      */
     public function index(Request $request): void
     {
-        $sortBy = $request->get('sort_by', 'created_at'); // За замовчуванням сортуємо за created_at
-        $sortDirection = $request->get('sort_direction', 'asc'); // За замовчуванням в порядку зростання
+        $comments = Comment::sortRootComments(
+            $request->get('sort_by', 'created_at'),
+            $request->get('sort_direction', 'asc')
+        )->paginate(25);
 
-        $comments = Comment::sortRootComments($sortBy, $sortDirection)->paginate(25);
-
-        $commentCollection = new CommentCollection($comments);
-        echo $commentCollection->toJson();
+        echo (new CommentCollection($comments))->toJson();
     }
 
     /**
@@ -42,17 +42,12 @@ class CommentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CommentRequest $request, Comment $comment): void
+    public function store(StoreCommentAction $action): \Illuminate\Http\JsonResponse
 
     {
-        $data = $request->validated();
+        $action->handle();
 
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $data['file_path'] = $this->imageService->saveImage($file, $this->storagePath);
-        }
-        $comment->fill($data);
-        $comment->save();
+        return response()->json(['message' => 'Comment saved successfully'], 200);
     }
 
     /**
